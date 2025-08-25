@@ -63,6 +63,9 @@ TagManager:
   - name: House
     uniqueID: 3144697043
     locked: 0
+  - name: monster
+    uniqueID: 2481952597
+    locked: 0
   - name: Tree1
     uniqueID: 650753635
     locked: 0
@@ -77,9 +80,6 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
-    locked: 0
-  - name: monster
-    uniqueID: 2481952597
     locked: 0
   m_RenderingLayers:
   - Default
