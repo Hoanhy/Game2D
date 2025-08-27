@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - slime
+  - Slime
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -63,14 +65,14 @@ TagManager:
   - name: House
     uniqueID: 3144697043
     locked: 0
-  - name: monster
-    uniqueID: 2481952597
-    locked: 0
   - name: Tree1
     uniqueID: 650753635
     locked: 0
   - name: Player
     uniqueID: 4136496921
+    locked: 0
+  - name: Enemy
+    uniqueID: 2481952597
     locked: 0
   - name: Roof
     uniqueID: 1773854267
