@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class monster : MonoBehaviour
+public class Enemy : MonoBehaviour
 {
     public float speed = 2f;          // tốc độ di chuyển
     public float moveTime = 3f;       // thời gian đi 1 hướng
