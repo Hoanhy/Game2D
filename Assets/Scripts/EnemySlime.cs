@@ -1,80 +1,119 @@
 ﻿using UnityEngine;
 
-public class EnemySlime : MonoBehaviour
+public class enemySlime : MonoBehaviour
 {
-    [Header("Chỉ số cơ bản")]
-    [SerializeField] private int maxHealth = 50;
-    [SerializeField] private float speed = 1f;
+    [Header("Thuộc tính di chuyển")]
+    public float speed = 2f;
+    public float moveTime = 3f;
+    public float stopTime = 1f;
 
-    [Header("Di chuyển")]
-    [SerializeField] private float moveTime = 2f;
-    [SerializeField] private float stopTime = 1f;
+    [Header("Phát hiện Player")]
+    public float chaseRange = 5f;
+    public float attackRange = 1f;
+    public float attackCooldown = 1.5f;
 
-    [Header("Chase Player")]
-    [SerializeField] private Transform player;
-    [SerializeField] private float chaseRange = 4f;
-
-    [Header("Animator")]
-    [SerializeField] private Animator animator;
-
-    private Rigidbody2D rb;
-    private Vector2 movement;
+    private float timer;
     private bool movingRight = true;
     private bool isStopped = false;
-    private float timer;
+    private Animator animator;
+    private Transform player;
+    private float lastAttackTime;
+
+    private enum State { Patrol, Chase, Attack }
+    private State currentState = State.Patrol;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
         timer = moveTime;
-        if (player == null)
-            player = GameObject.FindGameObjectWithTag("Player").transform;
+        animator = GetComponent<Animator>();
+        player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     void Update()
     {
-        // Xác định hướng di chuyển
-        if (player != null && Vector2.Distance(transform.position, player.position) < chaseRange)
-        {
-            movement = ((Vector2)player.position - rb.position).normalized * speed;
-        }
+        if (player == null) return;
+
+        float distance = Vector2.Distance(transform.position, player.position);
+
+        // Xác định state
+        if (distance <= attackRange)
+            currentState = State.Attack;
+        else if (distance <= chaseRange)
+            currentState = State.Chase;
         else
+            currentState = State.Patrol;
+
+        // Gọi hành vi
+        switch (currentState)
         {
-            if (isStopped)
-            {
-                movement = Vector2.zero;
-                timer -= Time.deltaTime;
-                if (timer <= 0f)
-                {
-                    movingRight = !movingRight;
-                    isStopped = false;
-                    timer = moveTime;
-                }
-            }
-            else
-            {
-                movement = (movingRight ? Vector2.right : Vector2.left) * speed;
-                timer -= Time.deltaTime;
-                if (timer <= 0f)
-                {
-                    isStopped = true;
-                    timer = stopTime;
-                }
-            }
+            case State.Patrol: Patrol(); break;
+            case State.Chase: Chase(); break;
+            case State.Attack: Attack(distance); break;
         }
-
-        // Cập nhật hướng sprite
-        if (movement.x != 0)
-            transform.localScale = new Vector3(movement.x > 0 ? 1 : -1, 1, 1);
-
-        // Cập nhật animator dựa trên movement
-        if (animator != null)
-            animator.SetFloat("Speed", movement.magnitude);
     }
 
-    void FixedUpdate()
+    void Patrol()
     {
-        // Di chuyển vật lý
-        rb.MovePosition(rb.position + movement * Time.fixedDeltaTime);
+        animator.SetBool("isAttacking", false);
+
+        if (isStopped)
+        {
+            animator.SetBool("isRunning", false);
+            timer -= Time.deltaTime;
+            if (timer <= 0f)
+            {
+                movingRight = !movingRight;
+                isStopped = false;
+                timer = moveTime;
+            }
+            return;
+        }
+
+        animator.SetBool("isRunning", true);
+
+        timer -= Time.deltaTime;
+        Vector2 dir = movingRight ? Vector2.right : Vector2.left;
+        transform.Translate(dir * speed * Time.deltaTime);
+
+        if (timer <= 0f)
+        {
+            isStopped = true;
+            timer = stopTime;
+        }
+
+        transform.localScale = new Vector3(movingRight ? -1 : 1, 1, 1);
+    }
+
+    void Chase()
+    {
+        animator.SetBool("isAttacking", false);
+        animator.SetBool("isRunning", true);
+
+        transform.position = Vector2.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
+
+        if (player.position.x > transform.position.x)
+            transform.localScale = new Vector3(-1, 1, 1);
+        else
+            transform.localScale = new Vector3(1, 1, 1);
+    }
+
+    void Attack(float distance)
+    {
+        // Nếu player chạy xa -> thoát Attack
+        if (distance > attackRange)
+        {
+            animator.SetBool("isAttacking", false);
+            return;
+        }
+
+        animator.SetBool("isRunning", false);
+        animator.SetBool("isAttacking", true);
+
+        if (Time.time >= lastAttackTime + attackCooldown)
+        {
+            Debug.Log("Monster Attack Player!");
+            // player.TakeDamage(damage);
+            lastAttackTime = Time.time;
+        }
     }
 }
