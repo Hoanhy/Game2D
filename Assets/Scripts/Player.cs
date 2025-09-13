@@ -6,6 +6,8 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private Animator animator;
+    private Vector2 lastMoveDirection = Vector2.down;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -20,16 +22,30 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        MovePlayer();
+        if (!animator.GetBool("isAttacking"))
+        {
+            MovePlayer();
+        }
+        else
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
     }
     void MovePlayer()
     {
-        float ho = Input.GetAxisRaw("Horizontal");
-        float ve = Input.GetAxisRaw("Vertical");
         Vector2 playerInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
         rb.linearVelocity = playerInput.normalized * Movespeed;
-       
-        animator.SetFloat("Xinput", ho);
-        animator.SetFloat("Yinput", ve);
+
+        if (playerInput != Vector2.zero)
+        {
+            lastMoveDirection = playerInput;
+        }
+
+        animator.SetFloat("Xinput", playerInput != Vector2.zero ? playerInput.x : lastMoveDirection.x);
+        animator.SetFloat("Yinput", playerInput != Vector2.zero ? playerInput.y : lastMoveDirection.y);
+        animator.SetFloat("Speed", playerInput.magnitude);
+
+        
     }
 }
