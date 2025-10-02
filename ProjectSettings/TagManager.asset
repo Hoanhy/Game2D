@@ -69,6 +69,12 @@ TagManager:
   - name: Door
     uniqueID: 3446366927
     locked: 0
+  - name: Slash
+    uniqueID: 591412825
+    locked: 0
+  - name: Sword
+    uniqueID: 2373378005
+    locked: 0
   - name: Player
     uniqueID: 4136496921
     locked: 0

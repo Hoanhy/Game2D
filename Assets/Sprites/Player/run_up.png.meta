@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 4dd573118d5c50a49b375992ff0d6cdd
+guid: 03210ec22ee88cc4b8a0af61f475eca9
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -14,18 +14,6 @@ TextureImporter:
   - first:
       213: 3746123119762467834
     second: run_up_3
-  - first:
-      213: -7395723654248013618
-    second: run_up_4
-  - first:
-      213: 6925657076329794216
-    second: run_up_5
-  - first:
-      213: -485735562940750571
-    second: run_up_6
-  - first:
-      213: 2286054313573989648
-    second: run_up_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,8 +114,8 @@ TextureImporter:
         serializedVersion: 2
         x: 38
         y: 22
-        width: 19
-        height: 31
+        width: 18
+        height: 37
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -146,10 +134,10 @@ TextureImporter:
       name: run_up_1
       rect:
         serializedVersion: 2
-        x: 133
-        y: 25
-        width: 19
-        height: 29
+        x: 132
+        y: 23
+        width: 18
+        height: 34
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -168,10 +156,10 @@ TextureImporter:
       name: run_up_2
       rect:
         serializedVersion: 2
-        x: 229
-        y: 23
-        width: 19
-        height: 32
+        x: 226
+        y: 24
+        width: 18
+        height: 33
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -190,10 +178,10 @@ TextureImporter:
       name: run_up_3
       rect:
         serializedVersion: 2
-        x: 326
-        y: 19
-        width: 19
-        height: 35
+        x: 320
+        y: 23
+        width: 18
+        height: 34
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -204,94 +192,6 @@ TextureImporter:
       bones: []
       spriteID: afbe15e2127ecf330800000000000000
       internalID: 3746123119762467834
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: run_up_4
-      rect:
-        serializedVersion: 2
-        x: 423
-        y: 22
-        width: 19
-        height: 31
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ec0e79b458c1d5990800000000000000
-      internalID: -7395723654248013618
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: run_up_5
-      rect:
-        serializedVersion: 2
-        x: 519
-        y: 25
-        width: 20
-        height: 29
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8aacececa60ec1060800000000000000
-      internalID: 6925657076329794216
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: run_up_6
-      rect:
-        serializedVersion: 2
-        x: 616
-        y: 23
-        width: 19
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 515642c34125249f0800000000000000
-      internalID: -485735562940750571
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: run_up_7
-      rect:
-        serializedVersion: 2
-        x: 711
-        y: 19
-        width: 19
-        height: 35
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 01db3d14942b9bf10800000000000000
-      internalID: 2286054313573989648
       vertices: []
       indices: 
       edges: []
@@ -314,10 +214,6 @@ TextureImporter:
       run_up_1: 3396987343971830283
       run_up_2: 4026534355312065940
       run_up_3: 3746123119762467834
-      run_up_4: -7395723654248013618
-      run_up_5: 6925657076329794216
-      run_up_6: -485735562940750571
-      run_up_7: 2286054313573989648
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
