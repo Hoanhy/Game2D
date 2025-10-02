@@ -1,4 +1,5 @@
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -6,9 +7,16 @@ public class PlayerAttack : MonoBehaviour
     public Rigidbody2D rb;
     public float attackCooldown = 0.3f;
     private float attackTime;
-    private Vector2 lastMoveDirection = Vector2.down;
+    private Vector2 lastMoveDirection;
 
     
+
+
+    private void Start()
+    {
+        animator = GetComponent<Animator>();
+ 
+    }
     void Update()
     {
         attackTime -= Time.deltaTime;
@@ -18,10 +26,15 @@ public class PlayerAttack : MonoBehaviour
             animator.SetBool("isAttacking", true);
             rb.linearVelocity = Vector2.zero;
             attackTime = attackCooldown;
+   
+           
         }
 
         lastMoveDirection = new Vector2(animator.GetFloat("Xinput"), animator.GetFloat("Yinput"));
+    
     }
+    
+   
     public void ResetAttack()
     {
         animator.SetBool("isAttacking", false);

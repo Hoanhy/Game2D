@@ -40,6 +40,6 @@ public class EnemyHealth : MonoBehaviour
         GetComponent<Enemy>().enabled = false;
         GetComponent<EnemyAttack>().enabled = false;
 
-        Destroy(gameObject, 2f); // chờ animation chết xong
+        Destroy(gameObject, 1f); // chờ animation chết xong
     }
 }
