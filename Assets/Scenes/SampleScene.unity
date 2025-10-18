@@ -53343,7 +53343,7 @@ MonoBehaviour:
   halfHeart: {fileID: 5407656843090688360, guid: 9e6c35c6007545d4ca2290e5a5df7955, type: 3}
   emptyHeart: {fileID: -5731162285055332302, guid: 9e6c35c6007545d4ca2290e5a5df7955, type: 3}
   maxHP: 6
-  currentHP: 0
+  currentHP: 6
 --- !u!1 &741281256
 GameObject:
   m_ObjectHideFlags: 0
