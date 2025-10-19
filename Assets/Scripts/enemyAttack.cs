@@ -4,7 +4,7 @@ public class EnemyAttack : MonoBehaviour
 {
     [Header("Tấn công")]
     public float attackCooldown = 1.5f;
-    public int damage = 10;
+    public int damage = 1;
 
     private Animator animator;
     private float lastAttackTime;
@@ -35,7 +35,7 @@ public class EnemyAttack : MonoBehaviour
             Debug.Log("Enemy Attack!");
 
             // Nếu Player có script máu thì gọi ở đây
-            // player.GetComponent<PlayerHealth>().TakeDamage(damage);
+            player.GetComponent<PlayerHealth>().TakeDamage(damage);
 
             lastAttackTime = Time.time;
         }
