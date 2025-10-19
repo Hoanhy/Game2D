@@ -10,17 +10,8 @@ public class PlayerHPUI : MonoBehaviour
     public Sprite halfHeart;
     public Sprite emptyHeart;
 
-    public int maxHP = 6;
-    public int currentHP = 6;
-
-    void Update()
+    public void UpdateHeartUI(int currentHP, int maxHP)
     {
-        UpdateHeartUI();
-    }
-
-    void UpdateHeartUI()
-    {
-        int hearts = Mathf.CeilToInt(maxHP / 2f);
         int fullHearts = currentHP / 2;
         bool hasHalf = currentHP % 2 != 0;
 
