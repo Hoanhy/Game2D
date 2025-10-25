@@ -1,0 +1,13 @@
+# Tất cả file text sẽ dùng CRLF (chuẩn Windows)
+* text eol=crlf
+
+# Unity thường dùng các file text này
+*.cs text eol=crlf
+*.shader text eol=crlf
+*.meta text eol=crlf
+*.asset text eol=crlf
+*.prefab text eol=crlf
+
+# Các file text khác
+*.txt text eol=crlf
+*.md text eol=crlf
