@@ -42,6 +42,9 @@ TagManager:
   - name: Water
     uniqueID: 2493659927
     locked: 0
+  - name: waves
+    uniqueID: 3120497799
+    locked: 0
   - name: Ground
     uniqueID: 1232133481
     locked: 0
