@@ -2,14 +2,17 @@
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHP = 6;
+    public int maxHP = 3;
     private int currentHP;
 
     // Tham chiếu đến script UI của bạn
     public PlayerHPUI healthUI;
+    // Tham chiếu đến script Player (script di chuyển)
+    [SerializeField] private Player playerController;
 
     void Start()
     {
+        
         // Bắt đầu game với đầy máu
         currentHP = maxHP;
 
@@ -23,12 +26,22 @@ public class PlayerHealth : MonoBehaviour
     // Đây là hàm để các kịch bản khác (như kẻ thù) gọi
     public void TakeDamage(int damage)
     {
+        if (playerController != null && playerController.IsHit())
+        {
+            return; // Không nhận sát thương nếu đang nhấp nháy/bất tử
+        }
+
         currentHP -= damage;
 
         // Đảm bảo máu không tụt xuống dưới 0
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
 
         Debug.Log("Player HP: " + currentHP);
+
+        if (playerController != null)
+        {
+            playerController.StartHitEffect();
+        }
 
         // Yêu cầu UI cập nhật
         if (healthUI != null)
@@ -62,8 +75,17 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log("Player đã chết!");
-        // Thêm logic khi chết tại đây (ví dụ: chạy animation, tải lại màn chơi)
-        // Destroy(gameObject);
+        Debug.Log("Player đã chết! (gọi từ PlayerHealth.cs)");
+
+        // SỬA: Gọi hàm Die() bên script Player để xử lý animation/hủy đối tượng
+        if (playerController != null)
+        {
+            playerController.Die();
+        }
+        else
+        {
+            // Nếu không tìm thấy script Player, thì tự hủy
+            //Destroy(gameObject);
+        }
     }
 }
