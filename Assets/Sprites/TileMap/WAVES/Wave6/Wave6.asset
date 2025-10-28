@@ -12,9 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
   m_Name: Wave6
   m_EditorClassIdentifier: 
-  m_AnimatedSprites: []
-  m_MinSpeed: 1
-  m_MaxSpeed: 1
+  m_AnimatedSprites:
+  - {fileID: 0}
+  - {fileID: 465645069, guid: 57f39bab82e41b144a71535aac08a397, type: 3}
+  - {fileID: -1805407964, guid: 57f39bab82e41b144a71535aac08a397, type: 3}
+  - {fileID: -869052259, guid: 57f39bab82e41b144a71535aac08a397, type: 3}
+  - {fileID: 1098159264, guid: 57f39bab82e41b144a71535aac08a397, type: 3}
+  - {fileID: -768574556, guid: 57f39bab82e41b144a71535aac08a397, type: 3}
+  m_MinSpeed: 5
+  m_MaxSpeed: 5
   m_AnimationStartTime: 0
   m_AnimationStartFrame: 0
   m_TileColliderType: 0
