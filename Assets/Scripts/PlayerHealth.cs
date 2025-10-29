@@ -32,7 +32,7 @@ public class PlayerHealth : MonoBehaviour
         }
 
         currentHP -= damage;
-
+        FindFirstObjectByType<CameraShake>().ShakeCamera(10f, 0.3f);
         // Đảm bảo máu không tụt xuống dưới 0
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
 
