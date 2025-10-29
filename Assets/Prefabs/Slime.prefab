@@ -221,6 +221,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 3
+  knockbackForce: 5
+  knockbackDuration: 0.2
 --- !u!114 &1710518645150858467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,8 +235,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f80a80b38b487e4aaf630ecce055c76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackCooldown: 1.5
-  damage: 10
+  attackCooldown: 5
+  damage: 1
 --- !u!114 &6257896148479082780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -248,8 +250,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPrefab: {fileID: 0}
-  spawnRate: 2
-  spawnRadius: 2
+  spawnAreaSize: {x: 6, y: 4}
+  enemiesPerWave: 5
+  timeBetweenWaves: 5
+  timeBetweenSpawns: 1
+  maxWaves: 3
 --- !u!1 &6624854454680225983
 GameObject:
   m_ObjectHideFlags: 0
