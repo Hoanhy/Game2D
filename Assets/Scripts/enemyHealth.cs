@@ -28,7 +28,7 @@ public class EnemyHealth : MonoBehaviour
 
         currentHealth -= amount;
         Debug.Log($"Enemy nhận sát thương: {amount} | HP còn lại: {currentHealth}");
-        FindFirstObjectByType<CameraShake>().ShakeCamera(10f, 0.3f);
+        
 
         if (currentHealth <= 0)
         {
