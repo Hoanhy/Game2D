@@ -8,14 +8,14 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8344267391475279136}
-  - component: {fileID: 3280740169000135439}
-  - component: {fileID: 2347822728787967490}
-  - component: {fileID: 3555288714831592137}
-  - component: {fileID: 5819735107696091275}
-  - component: {fileID: 263815736381950477}
-  - component: {fileID: 8928505793376044920}
-  - component: {fileID: 8379715143029355040}
+  - component: {fileID: 440352351234741269}
+  - component: {fileID: 813724911541816146}
+  - component: {fileID: 918418914567616221}
+  - component: {fileID: -8049535023243208901}
+  - component: {fileID: -2063907770587735598}
+  - component: {fileID: 8877020638894909720}
+  - component: {fileID: 1017596679536485631}
+  - component: {fileID: 1710518645150858467}
   m_Layer: 0
   m_Name: Slime
   m_TagString: Enemy
@@ -236,7 +236,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackCooldown: 5
   damage: 1
---- !u!1 &6596840163956632227
+--- !u!1 &6624854454680225983
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
