@@ -20,12 +20,17 @@ public class PauseMenu : MonoBehaviour
 
     void Update()
     {
-        // Phím ESC mở
-        if (Input.GetKeyDown(KeyCode.Escape) && !isPaused)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            PauseGame();
+            if (!isPaused)
+            {
+                PauseGame();
+            }
+            // Nếu đã pause rồi thì Esc không làm gì cả
+            // Để người chơi chỉ dùng nút Resume hoặc CloseSettings
         }
     }
+
 
     public void ResumeGame()
     {
