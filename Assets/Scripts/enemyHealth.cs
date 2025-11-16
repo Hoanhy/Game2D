@@ -7,12 +7,15 @@ public class EnemyHealth : MonoBehaviour
     private int currentHealth;
 
     [Header("Knockback khi bị đánh")]
-    public float knockbackForce = 5f; // lực đẩy lùi
-    public float knockbackDuration = 0.2f; // thời gian bị đẩy lùi
+    public float knockbackForce = 5f;
+    public float knockbackDuration = 0.2f;
 
     private Animator animator;
     private Rigidbody2D rb;
     private bool isKnockedBack = false;
+
+    [HideInInspector]
+    public EnemySpawner spawner; // gán khi spawn
 
     void Start()
     {
@@ -21,25 +24,21 @@ public class EnemyHealth : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // Gọi khi enemy nhận sát thương
     public void TakeDamage(int amount, Vector2 attackDirection)
     {
-        if (isKnockedBack) return; // tránh spam hit liên tục
+        if (isKnockedBack) return;
 
         currentHealth -= amount;
         Debug.Log($"Enemy nhận sát thương: {amount} | HP còn lại: {currentHealth}");
         
 
         if (currentHealth <= 0)
-        {
             Die();
-        }
         else
         {
             if (animator != null)
                 animator.SetTrigger("Hit");
 
-            // Thêm hiệu ứng knockback
             StartCoroutine(ApplyKnockback(attackDirection));
         }
     }
@@ -56,7 +55,6 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("Enemy chết!");
         if (animator != null)
             animator.SetTrigger("Die");
 
@@ -66,6 +64,10 @@ public class EnemyHealth : MonoBehaviour
         GetComponent<Collider2D>().enabled = false;
         GetComponent<Enemy>().enabled = false;
         GetComponent<EnemyAttack>().enabled = false;
+
+        // --- Bổ sung: báo EnemySpawner ---
+        if (spawner != null)
+            spawner.EnemyDied();
 
         Destroy(gameObject, 1.5f);
     }
