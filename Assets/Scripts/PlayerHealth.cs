@@ -2,8 +2,8 @@
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHP = 3;
-    private int currentHP;
+    public int maxHP = 6;
+    public int currentHP;
 
     // Tham chiếu đến script UI của bạn
     public PlayerHPUI healthUI;
@@ -13,14 +13,6 @@ public class PlayerHealth : MonoBehaviour
     void Start()
     {
         
-        // Bắt đầu game với đầy máu
-        currentHP = maxHP;
-
-        // Cập nhật UI lần đầu tiên
-        if (healthUI != null)
-        {
-            healthUI.UpdateHeartUI(currentHP, maxHP);
-        }
     }
 
     // Đây là hàm để các kịch bản khác (như kẻ thù) gọi
