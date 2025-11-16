@@ -30,6 +30,7 @@ public class EnemyHealth : MonoBehaviour
 
         currentHealth -= amount;
         Debug.Log($"Enemy nhận sát thương: {amount} | HP còn lại: {currentHealth}");
+        
 
         if (currentHealth <= 0)
             Die();
