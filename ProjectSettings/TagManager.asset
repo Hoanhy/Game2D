@@ -99,6 +99,9 @@ TagManager:
   - name: Tree2
     uniqueID: 3736807375
     locked: 0
+  - name: CheckPoint
+    uniqueID: 251020787
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

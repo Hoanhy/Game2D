@@ -35,7 +35,16 @@ public class Sword : MonoBehaviour
         Vector3 dir = mouseWorld - transform.position;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, 0, angle + rotateOffset);
-       
+        if (angle > 90 || angle < -90)
+        {
+            // Lật sprite theo chiều dọc
+            spriteRenderer.flipY = true;
+        }
+        else
+        {
+            // Nếu ở bên phải, không lật
+            spriteRenderer.flipY = false;
+        }
     }
 
     public void Swing()
@@ -65,7 +74,6 @@ public class Sword : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 0, lockedAngle);
             yield return null;
         }
-        yield return new WaitForSeconds(swingCooldown);
         spriteRenderer.enabled = false;
         if (hitbox != null) hitbox.enabled = false;
         swingBlock = false;
