@@ -75,6 +75,9 @@ TagManager:
   - name: Slash
     uniqueID: 591412825
     locked: 0
+  - name: wallblock
+    uniqueID: 2339570911
+    locked: 0
   - name: Sword
     uniqueID: 2373378005
     locked: 0
