@@ -22,12 +22,14 @@ public class PauseMenu : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (!isPaused)
+            if (isPaused)
             {
-                PauseGame();
+                ResumeGame(); // Nếu đang pause thì bấm Esc để tiếp tục
             }
-            // Nếu đã pause rồi thì Esc không làm gì cả
-            // Để người chơi chỉ dùng nút Resume hoặc CloseSettings
+            else
+            {
+                PauseGame(); // Nếu đang chơi thì bấm Esc để pause
+            }
         }
     }
 
@@ -63,6 +65,8 @@ public class PauseMenu : MonoBehaviour
         {
             Debug.LogError("Pause Menu UI chưa được gán trong Inspector!");
         }
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void OpenSettings()
@@ -94,6 +98,7 @@ public class PauseMenu : MonoBehaviour
     public void ExitToMainMenu()
     {
         Time.timeScale = 1f; // Reset lại game time
-        SceneManager.LoadScene("MainMenu");
+        isPaused = false;
+        SceneManager.LoadScene("MenuGame");
     }
 }
