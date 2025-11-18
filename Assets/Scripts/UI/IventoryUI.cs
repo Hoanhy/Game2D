@@ -9,7 +9,7 @@ public class InventoryUI : MonoBehaviour
     public float slideOffsetX = 800f; // khoảng cách panel ở ngoài bên phải
 
     private bool isOpen = false;
-
+    public static bool InventoryIsOpen = false;
     private Vector3 shownPosition; // vị trí panel khi hiển thị
     private Vector3 hiddenPosition; // vị trí panel ẩn ngoài màn hình
 
@@ -21,9 +21,15 @@ public class InventoryUI : MonoBehaviour
         // Tính vị trí ẩn (bên phải)
         hiddenPosition = shownPosition + new Vector3(slideOffsetX, 0, 0);
 
-        // Bắt đầu ẩn panel hoàn toàn
-        inventoryPanel.SetActive(false);
-        Time.timeScale = 1f;
+        // Reset trạng thái tĩnh khi bắt đầu game
+        InventoryIsOpen = false;
+        isOpen = false;
+
+        // Chỉ set timeScale = 1 nếu game không bị pause từ trước (đề phòng)
+        if (!PauseMenu.GameIsPaused)
+        {
+            Time.timeScale = 1f;
+        }
 
         // Giữ chuột luôn hiển thị khi chơi (vì nhân vật đánh theo hướng chuột)
         Cursor.visible = true;
@@ -32,6 +38,11 @@ public class InventoryUI : MonoBehaviour
 
     void Update()
     {
+        // Nếu Pause Menu đang bật, thì KHÔNG cho phép bấm E
+        if (PauseMenu.GameIsPaused)
+        {
+            return;
+        }
         // Nhấn phím E để mở / đóng kho đồ
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -42,6 +53,7 @@ public class InventoryUI : MonoBehaviour
     void ToggleInventory()
     {
         isOpen = !isOpen;
+        InventoryIsOpen = isOpen;
 
         if (isOpen)
         {

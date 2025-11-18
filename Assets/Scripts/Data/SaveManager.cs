@@ -213,7 +213,6 @@ public class SaveManager : MonoBehaviour
         if (currentGameData != null && !currentGameData.finishedSpawnerIDs.Contains(spawnerID))
         {
             currentGameData.finishedSpawnerIDs.Add(spawnerID);
-            SaveGame(false);
 
         }
     }
