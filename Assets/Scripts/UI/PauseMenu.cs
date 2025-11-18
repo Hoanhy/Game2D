@@ -3,10 +3,10 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
+    public static bool GameIsPaused = false;
     [SerializeField] private GameObject pauseMenuUI;       // UI panel chính
     [SerializeField] private GameObject settingsPanelUI;   // UI panel settings
 
-    private bool isPaused = false;
 
     void Start()
     {
@@ -16,13 +16,24 @@ public class PauseMenu : MonoBehaviour
 
         if (settingsPanelUI == null)
             Debug.LogWarning("Settings Panel UI chưa được gán (tùy chọn)!");
+
+        // Đảm bảo game không bị pause khi bắt đầu
+        GameIsPaused = false;
+        Time.timeScale = 1f;
+        AudioListener.pause = false;
     }
 
     void Update()
     {
+        // Nếu Túi Đồ đang mở, thì bấm Esc KHÔNG ĐƯỢC hiện Pause Menu
+        if (InventoryUI.InventoryIsOpen)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isPaused)
+            if (GameIsPaused)
             {
                 ResumeGame(); // Nếu đang pause thì bấm Esc để tiếp tục
             }
@@ -42,7 +53,8 @@ public class PauseMenu : MonoBehaviour
             if (settingsPanelUI != null) settingsPanelUI.SetActive(false);
 
             Time.timeScale = 1f;
-            isPaused = false;
+            AudioListener.pause = false;
+            GameIsPaused = false;
 
             
         }
@@ -58,7 +70,8 @@ public class PauseMenu : MonoBehaviour
         {
             pauseMenuUI.SetActive(true);
             Time.timeScale = 0f;
-            isPaused = true;
+            AudioListener.pause = true;
+            GameIsPaused = true;
 
         }
         else
@@ -98,7 +111,8 @@ public class PauseMenu : MonoBehaviour
     public void ExitToMainMenu()
     {
         Time.timeScale = 1f; // Reset lại game time
-        isPaused = false;
+        GameIsPaused = false;
+        AudioListener.pause = false;
         SceneManager.LoadScene("MenuGame");
     }
 }
