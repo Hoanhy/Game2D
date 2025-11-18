@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 263815736381950477}
   - component: {fileID: 8379715143029355040}
   - component: {fileID: 8928505793376044920}
+  - component: {fileID: 9101436665146647617}
   m_Layer: 0
   m_Name: Slime
   m_TagString: Enemy
@@ -32,7 +33,7 @@ Transform:
   m_GameObject: {fileID: 83311776009999711}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 24.93, y: -8.31, z: -0.00027365936}
+  m_LocalPosition: {x: 24.93, y: -8.39, z: -0.00027365936}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -100,7 +101,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.024689674, y: -0.07406759}
+  m_Offset: {x: 0, y: -0.019184113}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -110,7 +111,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.732996, y: 0.76591396}
+  m_Size: {x: 0.8020363, y: 0.87587357}
   m_EdgeRadius: 0
 --- !u!212 &3280740169000135439
 SpriteRenderer:
@@ -154,7 +155,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1813014699
-  m_SortingLayer: -4
+  m_SortingLayer: -5
   m_SortingOrder: 0
   m_Sprite: {fileID: -7294240746080377788, guid: 3ac93fff6526c74469f6fc9df1416c06, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -234,9 +235,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 5
+  currentHealth: 0
   knockbackForce: 5
   knockbackDuration: 0.2
   spawner: {fileID: 0}
+--- !u!114 &9101436665146647617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 83311776009999711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9f80b0202e6ec440be65b677c33c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyID: 
 --- !u!1 &6624854454680225983
 GameObject:
   m_ObjectHideFlags: 0
