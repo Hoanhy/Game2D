@@ -64,7 +64,12 @@ public class EnemyHealth : MonoBehaviour
         GetComponent<Collider2D>().enabled = false;
         GetComponent<Enemy>().enabled = false;
         GetComponent<EnemyAttack>().enabled = false;
-
+        EnemyState state = GetComponent<EnemyState>();
+        if (state != null && SaveManager.Instance != null)
+        {
+            // Ghi tên mình vào sổ tử
+            SaveManager.Instance.AddDeadEnemy(state.enemyID);
+        }
         // --- Bổ sung: báo EnemySpawner ---
         if (spawner != null)
             spawner.EnemyDied();

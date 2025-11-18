@@ -14,6 +14,7 @@ public class GameProgress
     // danh sách kẻ thù
     public List<EnemyData> enemies = new List<EnemyData>();
     public List<string> finishedSpawnerIDs = new List<string>();
+    public List<string> deadEnemyIDs = new List<string>();
     // Đây là "Hàm khởi tạo" (Constructor)
     // Nó đặt các giá trị mặc định khi người chơi "New Game"
     public GameProgress()

@@ -161,7 +161,15 @@ public class SaveManager : MonoBehaviour
             StartNewGame();
         }
     }
-
+    public void AddDeadEnemy(string enemyID)
+    {
+        if (currentGameData != null && !currentGameData.deadEnemyIDs.Contains(enemyID))
+        {
+            currentGameData.deadEnemyIDs.Add(enemyID);
+            // Lưu ý: Ta chưa cần SaveGame ngay, đợi chạm Checkpoint lưu cũng được
+            // Hoặc nếu muốn chắc ăn thì gọi SaveGame(false) tại đây.
+        }
+    }
     // HÀM NỘI BỘ: Áp dụng dữ liệu vào game
     private void LoadGameDataIntoScene()
     {
@@ -181,14 +189,18 @@ public class SaveManager : MonoBehaviour
             // Lặp qua từng con quái thực tế trong game
             foreach (EnemyState enemyScript in allEnemiesInScene)
             {
-                // Tìm xem trong File Save có dữ liệu của ID này không?
-                // (Dùng hàm Find của List để tìm theo enemyID)
-                EnemyData savedData = currentGameData.enemies.Find(x => x.enemyID == enemyScript.enemyID);
+                // A. KIỂM TRA XEM NÓ CÓ TRONG "SỔ TỬ" KHÔNG?
+                if (currentGameData.deadEnemyIDs.Contains(enemyScript.enemyID))
+                {
+                    // Nếu có ID trong danh sách chết -> Tắt ngay lập tức
+                    enemyScript.gameObject.SetActive(false);
+                    continue; // Bỏ qua, không cần load máu me gì nữa
+                }
 
-                // Nếu tìm thấy dữ liệu đã lưu trong quá khứ
+                // B. Nếu còn sống, load máu và vị trí (Code cũ)
+                EnemyData savedData = currentGameData.enemies.Find(x => x.enemyID == enemyScript.enemyID);
                 if (savedData != null)
                 {
-                    // Bắt con quái đó áp dụng dữ liệu (dịch chuyển, chỉnh máu, hoặc tự sát)
                     enemyScript.LoadData(savedData);
                 }
             }
