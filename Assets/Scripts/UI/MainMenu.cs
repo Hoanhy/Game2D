@@ -1,40 +1,55 @@
 ﻿using UnityEngine;
+using UnityEngine.UI; // Cần thiết để điều khiển Nút (Button)
+using UnityEngine.SceneManagement; // Cần thiết để tải màn
 
-public class MainMenu : MonoBehaviour
+public class MainMenuManager : MonoBehaviour
 {
-    // [Gán trong Inspector] Kéo Panel Main Menu (chứa các nút Play, Exit) vào đây.
-    [SerializeField] private GameObject mainMenuPanelUI;
+    [Header("UI Buttons")]
+    public GameObject continueButton; // Kéo nút "Tiếp tục" vào đây
+    public GameObject newGameButton;    // Kéo nút "Chơi mới" vào đây
 
-    void Awake()
-    {
-        //Tạm dừng thời gian game trước khi bất kỳ script Start() nào chạy
-        Time.timeScale = 0f;
-    }
+    [Header("Scene Settings")]
+    public string gameplaySceneName = "Game"; // Tên màn chơi của bạn
 
     void Start()
     {
-        // Đảm bảo Main Menu được hiển thị khi bắt đầu game
-        if (mainMenuPanelUI != null)
-        {
-            mainMenuPanelUI.SetActive(true);
-        }
+        // 1. Kiểm tra xem file save có tồn tại không
+        // Chúng ta gọi hàm vừa tạo trong SaveManager.
+        // Phải đảm bảo GameManager (chứa SaveManager) đã có trong Scene này.
+        bool saveFileExists = SaveManager.Instance.CheckForSaveFile();
+
+        // 2. Ẩn/Hiện nút dựa trên yêu cầu của bạn
+        // (Nếu có save: chỉ hiện "Continue")
+        // (Nếu không có save: chỉ hiện "New Game")
+
+        // CHỈ ẨN/HIỆN NÚT CONTINUE
+        continueButton.SetActive(saveFileExists);
+
+        // NÚT NEW GAME LUÔN LUÔN HIỆN
+        newGameButton.SetActive(true);
     }
 
-    public void PlayGame()
+    // 3. Hàm để gán cho sự kiện OnClick() của nút "Continue"
+    public void OnContinueClicked()
     {
-        // 1. BẬT LẠI thời gian game khi nút Play được nhấn
-        Time.timeScale = 1f;
-
-        // 2. Ẩn Main Menu
-        if (mainMenuPanelUI != null)
-        {
-            mainMenuPanelUI.SetActive(false);
-        }
+        // Tải dữ liệu trước, sau đó tải màn chơi
+        // (SaveManager sẽ tự động áp dụng dữ liệu khi màn chơi được tải xong)
+        SaveManager.Instance.LoadGame();
+        SceneManager.LoadScene(gameplaySceneName);
     }
 
-    public void ExitGame()
+    // 4. Hàm để gán cho sự kiện OnClick() của nút "New Game"
+    public void OnNewGameClicked()
     {
-        Debug.Log("Quit game!");
+        // Tạo file save mới, sau đó tải màn chơi
+        SaveManager.Instance.StartNewGame();
+        SceneManager.LoadScene(gameplaySceneName);
+    }
+    public void OnQuitClicked()
+    {
+        Debug.Log("Đang thoát game...");
+
+        // Hàm Application.Quit() sẽ đóng ứng dụng
         Application.Quit();
     }
 }

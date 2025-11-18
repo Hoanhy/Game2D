@@ -2,21 +2,24 @@
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHP = 3;
-    private int currentHP;
+    public int maxHP = 6;
+    public int currentHP;
 
     // Tham chiếu đến script UI của bạn
     public PlayerHPUI healthUI;
     // Tham chiếu đến script Player (script di chuyển)
     [SerializeField] private Player playerController;
+    // Kéo script GameOverManager vào đây
+    [SerializeField] private GameOverManager gameOverManager;
 
+    private void Awake()
+    {
+        // Đặt máu đầy mặc định để test trực tiếp trong Scene
+        // SaveManager sẽ ghi đè lên số này sau 1 frame nếu bạn chơi từ Menu (Load/New Game)
+        currentHP = maxHP;
+    }
     void Start()
     {
-        
-        // Bắt đầu game với đầy máu
-        currentHP = maxHP;
-
-        // Cập nhật UI lần đầu tiên
         if (healthUI != null)
         {
             healthUI.UpdateHeartUI(currentHP, maxHP);
@@ -26,7 +29,7 @@ public class PlayerHealth : MonoBehaviour
     // Đây là hàm để các kịch bản khác (như kẻ thù) gọi
     public void TakeDamage(int damage)
     {
-        if (playerController != null && playerController.IsHit())
+        if (playerController != null && (playerController.IsHit() || playerController.IsDashing()))
         {
             return; // Không nhận sát thương nếu đang nhấp nháy/bất tử
         }
@@ -82,10 +85,9 @@ public class PlayerHealth : MonoBehaviour
         {
             playerController.Die();
         }
-        else
+        if (gameOverManager != null)
         {
-            // Nếu không tìm thấy script Player, thì tự hủy
-            //Destroy(gameObject);
+            gameOverManager.TriggerGameOver();
         }
     }
 }

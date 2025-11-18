@@ -1,8 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
+    [Header("Định danh (BẮT BUỘC PHẢI KHÁC NHAU)")]
+    public string spawnerID;
+
     [Header("Thiết lập kẻ địch")]
     public GameObject enemyPrefab;
 
@@ -21,7 +25,28 @@ public class EnemySpawner : MonoBehaviour
     private int currentWave = 0;
     private int enemiesAlive = 0;
     private bool isSpawning = false;
+    private bool isFinished = false;
+    private void Start()
+    {
+        // Nếu chưa đặt tên ID, báo lỗi ngay
+        if (string.IsNullOrEmpty(spawnerID))
+        {
+            Debug.LogError("Spawner này chưa có ID! Hãy đặt tên trong Inspector.");
+            return;
+        }
 
+        if (SaveManager.Instance != null && SaveManager.Instance.IsSpawnerFinished(spawnerID))
+        {
+            Debug.Log($"Spawner {spawnerID} đã hoàn thành trước đó. Tự hủy.");
+
+            // Đảm bảo tường được mở
+            if (spawnTrigger != null) spawnTrigger.ClearWall();
+
+            // Tắt script này hoặc hủy GameObject để không spawn nữa
+            Destroy(gameObject);
+            return;
+        }
+    }
     // --- Hiển thị vùng spawn ---
     private void OnDrawGizmos()
     {
@@ -32,11 +57,10 @@ public class EnemySpawner : MonoBehaviour
     // --- Trigger khi Player bước vào ---
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && !isSpawning)
+        if (other.CompareTag("Player") && !isSpawning && !isFinished)
         {
             Debug.Log("Player entered spawn area");
 
-            // Bật tường
             if (spawnTrigger != null && spawnTrigger.wallGroup != null)
                 spawnTrigger.wallGroup.SetActive(true);
 
@@ -72,26 +96,41 @@ public class EnemySpawner : MonoBehaviour
                 yield return null;
 
             Debug.Log($"Wave {currentWave} kết thúc. Nghỉ {timeBetweenWaves} giây...");
-            yield return new WaitForSeconds(timeBetweenWaves);
+            if (currentWave < maxWaves)
+                yield return new WaitForSeconds(timeBetweenWaves);
         }
 
         Debug.Log("Đã spawn đủ số wave!");
         isSpawning = false;
+        isFinished = true;
 
         // Tắt tường sau wave cuối cùng
         if (spawnTrigger != null)
             spawnTrigger.ClearWall();
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.MarkSpawnerFinished(spawnerID);
+        }
     }
 
     void SpawnEnemy()
     {
         Vector2 randomOffset = new Vector2(
-            Random.Range(-spawnAreaSize.x / 2f, spawnAreaSize.x / 2f),
-            Random.Range(-spawnAreaSize.y / 2f, spawnAreaSize.y / 2f)
+            UnityEngine.Random.Range(-spawnAreaSize.x / 2f, spawnAreaSize.x / 2f),
+            UnityEngine.Random.Range(-spawnAreaSize.y / 2f, spawnAreaSize.y / 2f)
         );
         Vector2 spawnPos = (Vector2)transform.position + randomOffset;
 
         GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+
+        // (Để tránh lỗi trùng ID khi save game giữa chừng)
+        EnemyState enemyState = enemy.GetComponent<EnemyState>();
+        if (enemyState != null)
+        {
+            // Đặt ID dựa trên Spawner ID + Wave + Số thứ tự
+            // Ví dụ: "Spawner1_Wave2_Enemy5"
+            enemyState.enemyID = $"{spawnerID}_W{currentWave}_E{enemiesAlive}";
+        }
 
         EnemyHealth eh = enemy.GetComponent<EnemyHealth>();
         if (eh != null)

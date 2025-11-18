@@ -3,8 +3,8 @@
 public class EnemyHealth : MonoBehaviour
 {
     [Header("Chỉ số máu")]
-    public int maxHealth = 50;
-    private int currentHealth;
+    public int maxHealth = 5;
+    public int currentHealth;
 
     [Header("Knockback khi bị đánh")]
     public float knockbackForce = 5f;

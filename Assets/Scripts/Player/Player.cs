@@ -158,4 +158,8 @@ public class Player : MonoBehaviour
         // Thêm logic animation chết ở đây nếu muốn
         //Destroy(gameObject);
     }
+    public bool IsDashing()
+    {
+        return isDashing;
+    }
 }
