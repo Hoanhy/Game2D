@@ -15,6 +15,7 @@ public class GameProgress
     public List<EnemyData> enemies = new List<EnemyData>();
     public List<string> finishedSpawnerIDs = new List<string>();
     public List<string> deadEnemyIDs = new List<string>();
+    public List<InventoryData> inventory = new List<InventoryData>();
     // Đây là "Hàm khởi tạo" (Constructor)
     // Nó đặt các giá trị mặc định khi người chơi "New Game"
     public GameProgress()
@@ -66,5 +67,17 @@ public class SerializableVector2
     public Vector2 ToVector2()
     {
         return new Vector2(x, y);
+    }
+}
+[System.Serializable]
+public class InventoryData
+{
+    public string itemName;
+    public int quantity;
+
+    public InventoryData(string name, int qty)
+    {
+        this.itemName = name;
+        this.quantity = qty;
     }
 }

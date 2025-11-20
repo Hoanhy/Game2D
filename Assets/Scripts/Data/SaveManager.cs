@@ -118,6 +118,10 @@ public class SaveManager : MonoBehaviour
             // Lấy dữ liệu từ từng con và nhét vào danh sách lưu trữ
             currentGameData.enemies.Add(enemy.GetData());
         }
+        if (InventoryManager.Instance != null)
+        {
+            currentGameData.inventory = InventoryManager.Instance.GetInventoryData();
+        }
 
         // 2. CHUYỂN SANG JSON
         string json = JsonUtility.ToJson(currentGameData, true);
@@ -204,7 +208,10 @@ public class SaveManager : MonoBehaviour
                     enemyScript.LoadData(savedData);
                 }
             }
-            // ---------------------------
+            if (InventoryManager.Instance != null)
+            {
+                InventoryManager.Instance.LoadInventory(currentGameData.inventory);
+            }
 
             Debug.Log("Dữ liệu game đã được tải!");
         }

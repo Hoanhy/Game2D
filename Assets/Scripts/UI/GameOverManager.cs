@@ -18,7 +18,8 @@ public class GameOverManager : MonoBehaviour
             if (parentObject != null)
             {
                 // Tìm đứa CON tên là "GameOverPanel" bên trong nó (kể cả khi nó đang TẮT)
-                Transform childPanel = parentObject.transform.Find("GameOverPanel");
+                Transform childPanel = parentObject.transform.Find("GameOverMenu");
+
 
                 if (childPanel != null)
                 {
