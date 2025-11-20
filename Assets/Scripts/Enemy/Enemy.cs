@@ -23,6 +23,8 @@ public class Enemy : MonoBehaviour
     private Vector2 moveDir;
 
     private EnemyAttack enemyAttack;
+    private Rigidbody2D rb;
+    private EnemyHealth enemyHealth;
 
     private enum State { Patrol, Chase, Attack }
     private State currentState = State.Patrol;
@@ -31,6 +33,8 @@ public class Enemy : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         enemyAttack = GetComponent<EnemyAttack>();
+        rb = GetComponent<Rigidbody2D>();
+        enemyHealth = GetComponent<EnemyHealth>();
 
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null) player = p.transform;
@@ -41,7 +45,7 @@ public class Enemy : MonoBehaviour
         PickRandomDirection();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (player == null) return;
 
@@ -53,12 +57,19 @@ public class Enemy : MonoBehaviour
             currentState = State.Chase;
         else
             currentState = State.Patrol;
+        if (enemyHealth != null && enemyHealth.isKnockedBack)
+        {
+            return;
+        }
 
         switch (currentState)
         {
             case State.Patrol: Patrol(); break;
             case State.Chase: Chase(); break;
-            case State.Attack: enemyAttack.DoAttack(player, attackRange); break;
+            case State.Attack: enemyAttack.DoAttack(player, attackRange);
+                rb.linearVelocity = Vector2.zero;
+                enemyAttack.DoAttack(player, attackRange);
+                break;
         }
     }
 
@@ -69,7 +80,8 @@ public class Enemy : MonoBehaviour
         if (isStopped)
         {
             animator.SetBool("isRunning", false);
-            timer -= Time.deltaTime;
+            rb.linearVelocity = Vector2.zero;
+            timer -= Time.fixedDeltaTime;
             if (timer <= 0f)
             {
                 isStopped = false;
@@ -81,15 +93,18 @@ public class Enemy : MonoBehaviour
 
         animator.SetBool("isRunning", true);
 
-        timer -= Time.deltaTime;
+        timer -= Time.fixedDeltaTime;
+        Vector2 currentPos = rb.position;
         Vector2 nextPos = (Vector2)transform.position + moveDir * speed * Time.deltaTime;
 
         if (Vector2.Distance(nextPos, spawnPos) > patrolRadius)
         {
-            moveDir = (spawnPos - (Vector2)transform.position).normalized;
+            moveDir = (spawnPos - currentPos).normalized;
+            // Tính lại hướng mới ngay lập tức để không bị kẹt
+            nextPos = currentPos + moveDir * speed * Time.fixedDeltaTime;
         }
 
-        transform.position = nextPos;
+        rb.MovePosition(nextPos);
 
         if (timer <= 0f)
         {
@@ -109,9 +124,10 @@ public class Enemy : MonoBehaviour
         animator.SetBool("isRunning", true);
 
         float chaseSpeed = speed * 1.5f;
-        Vector2 dir = (player.position - transform.position).normalized;
-        transform.position = Vector2.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
+        Vector2 targetPos = Vector2.MoveTowards(rb.position, player.position, chaseSpeed * Time.fixedDeltaTime);
+        rb.MovePosition(targetPos);
 
+        Vector2 dir = (player.position - transform.position).normalized;
         if (dir.x > 0)
             transform.localScale = new Vector3(1, 1, 1);
         else if (dir.x < 0)

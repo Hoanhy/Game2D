@@ -79,6 +79,9 @@ TagManager:
   - name: wallblock
     uniqueID: 2339570911
     locked: 0
+  - name: CheckPoint
+    uniqueID: 251020787
+    locked: 0
   - name: Sword
     uniqueID: 2373378005
     locked: 0
@@ -99,9 +102,6 @@ TagManager:
     locked: 0
   - name: Tree2
     uniqueID: 3736807375
-    locked: 0
-  - name: CheckPoint
-    uniqueID: 251020787
     locked: 0
   - name: Default
     uniqueID: 0
