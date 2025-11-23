@@ -1,153 +1,172 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager Instance;
 
+    // Kéo cái InventoryPanel (Cha của các Slot) vào đây
     public Transform slotParent;
-    public GameObject slotPrefab;
+
+    // Danh sách dữ liệu ảo (Quản lý thứ tự tại đây)
+    // (Cấu trúc InventoryData lấy từ file GameData.cs của bạn)
+    private List<InventoryData> items = new List<InventoryData>();
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
     }
+
     private void Start()
     {
-        // --- TẠO ITEM MẶC ĐỊNH LÚC ĐẦU GAME ---
-        // Chỉ tạo nếu đây là New Game (kiểm tra SaveManager nếu cần)
-        // Nếu bạn đã có hệ thống Load Game, phần này có thể bỏ qua
-        // hoặc chỉ chạy khi inventory trống.
-        if (slotParent.childCount == 0)
-        {
-            AddItem("Sword");  // Mặc định Slot 1
-   
+        // Đợi 1 frame để đảm bảo mọi thứ load xong
+        StartCoroutine(InitializeInventory());
+    }
+    System.Collections.IEnumerator InitializeInventory()
+    {
+        yield return null; // Chờ 1 frame
 
-        }   
+        // Kiểm tra xem Slot 1 có đồ chưa
+        // (Lấy slot đầu tiên trong danh sách con)
+        if (slotParent.childCount > 0)
+        {
+            InventoryItem firstSlot = slotParent.GetChild(0).GetComponent<InventoryItem>();
+
+            // Nếu Slot 1 chưa có đồ (quantity == 0) VÀ đây là game mới (chưa có dữ liệu load)
+            if (firstSlot != null && firstSlot.quantity == 0)
+            {
+                // Kiểm tra thêm: Nếu SaveManager đang có dữ liệu load dở thì đừng tạo đồ mới
+                // (Tránh trường hợp Load Game mà lại bị đè Kiếm vào)
+                bool isLoadingSave = false;
+                if (SaveManager.Instance != null && SaveManager.Instance.HasLoadedData)
+                {
+                    isLoadingSave = true;
+                }
+
+                if (!isLoadingSave)
+                {
+                    Debug.Log("Túi trống (New Game) -> Tạo Kiếm mặc định.");
+                    AddItem("Sword");
+                }
+            }
+        }
     }
     public void AddItem(string itemName)
     {
-        // 1. Kiểm tra cộng dồn (Chỉ áp dụng cho Potion)
+        // 1. Kiểm tra cộng dồn (Cho Potion)
         if (itemName == "Potion")
         {
-            foreach (Transform child in slotParent)
+            foreach (var item in items)
             {
-                InventoryItem itemScript = child.GetComponent<InventoryItem>();
-                if (itemScript != null && itemScript.itemName == itemName)
+                if (item.itemName == itemName)
                 {
-                    itemScript.quantity++;
-                    itemScript.UpdateQuantityUI();
-                    Debug.Log("Đã cộng dồn Potion thành: " + itemScript.quantity);
+                    item.quantity++;
+                    RefreshUI(); // Vẽ lại giao diện
                     return;
                 }
             }
         }
 
-        // 2. Load hình ảnh (Thêm debug để kiểm tra lỗi)
-        string path = "Icons/" + itemName;
-        Sprite itemIcon = Resources.Load<Sprite>(path);
+        // 2. Tạo dữ liệu mới
+        InventoryData newItem = new InventoryData(itemName, 1);
 
-        if (itemIcon == null)
+        // 3. LOGIC SẮP XẾP (Cái bạn cần nằm ở đây)
+        if (itemName == "Axe")
         {
-            Debug.LogError("LỖI TO: Không tìm thấy ảnh tại đường dẫn: Resources/" + path + ". Kiểm tra lại tên file hoặc thư mục!");
-            return;
+            // Nếu là Rìu -> Chèn vào vị trí số 0 (Đầu tiên)
+            // Kiếm và Máu sẽ tự động bị đẩy lùi xuống
+            items.Insert(0, newItem);
+        }
+        else if (itemName == "Sword")
+        {
+            // Kiếm thì chèn vào đầu (nếu chưa có Rìu) hoặc sau Rìu
+            // Để đơn giản: Cứ cho Kiếm vào cuối danh sách nếu không phải Rìu
+            items.Add(newItem);
+        }
+        else
+        {
+            // Các món khác (Potion) thêm vào cuối
+            items.Add(newItem);
         }
 
-        // 3. Tạo Slot
-        if (slotPrefab == null || slotParent == null)
+        // 4. Cập nhật lên các Slot thật
+        RefreshUI();
+    }
+
+    // Hàm giảm số lượng khi dùng
+    public void ReduceItem(string itemName)
+    {
+        InventoryData itemToRemove = null;
+        foreach (var item in items)
         {
-            Debug.LogError("LỖI: Quên kéo SlotPrefab hoặc SlotParent vào InventoryManager rồi!");
-            return;
+            if (item.itemName == itemName)
+            {
+                item.quantity--;
+                if (item.quantity <= 0) itemToRemove = item;
+                break;
+            }
         }
 
-        GameObject newSlot = Instantiate(slotPrefab, slotParent);
-        newSlot.GetComponent<Image>().sprite = itemIcon;
+        if (itemToRemove != null) items.Remove(itemToRemove);
 
-        InventoryItem newItemScript = newSlot.GetComponent<InventoryItem>();
-        if (newItemScript != null)
+        RefreshUI();
+    }
+
+    // --- HÀM QUAN TRỌNG: VẼ LẠI UI ---
+    // Hàm này sẽ lấy danh sách items và điền vào các Slot (1), Slot (2)...
+    void RefreshUI()
+    {
+        // Lấy tất cả các ô Slot con
+        // (Lưu ý: Phải đảm bảo tất cả Slot đều có script InventoryItem)
+        InventoryItem[] slots = slotParent.GetComponentsInChildren<InventoryItem>(true);
+
+        for (int i = 0; i < slots.Length; i++)
         {
-            newItemScript.itemName = itemName;
-            newItemScript.quantity = 1;
-            newItemScript.UpdateQuantityUI();
-
-            // --- LOGIC SẮP XẾP VỊ TRÍ ---
-            if (itemName == "Potion")
+            if (i < items.Count)
             {
-                newItemScript.itemType = ItemType.Consumable;
-                newItemScript.healAmount = 2;
-                // Potion mặc định sinh ra ở cuối cùng -> Đúng ý bạn (Slot 3)
+                // Nếu có dữ liệu -> Điền vào Slot
+                slots[i].SetSlotData(items[i].itemName, items[i].quantity);
             }
-            else if (itemName == "Sword")
+            else
             {
-                newItemScript.itemType = ItemType.Weapon;
-                // Kiếm sinh ra đầu game -> Mặc định Slot 1
-            }
-            else if (itemName == "Axe")
-            {
-                newItemScript.itemType = ItemType.Weapon;
-
-                // Rìu chen lên đầu tiên -> Đẩy Kiếm xuống Slot 2, Máu xuống Slot 3
-                newSlot.transform.SetAsFirstSibling();
-                Debug.Log("Đã nhặt Rìu và đưa lên đầu túi!");
+                // Nếu hết dữ liệu -> Làm trống Slot
+                slots[i].ClearSlot();
             }
         }
     }
-    // --- HÀM 1: LẤY DỮ LIỆU ĐỂ LƯU (SaveManager sẽ gọi) ---
+
+    // Các hàm Save/Load của bạn có thể gọi:
     public List<InventoryData> GetInventoryData()
     {
         List<InventoryData> dataList = new List<InventoryData>();
 
-        // Duyệt qua tất cả các ô Slot đang có
         foreach (Transform child in slotParent)
         {
             InventoryItem item = child.GetComponent<InventoryItem>();
-            if (item != null)
+
+            // Lưu tất cả slot nào CÓ SỐ LƯỢNG > 0
+            if (item != null && item.quantity > 0)
             {
-                // Lưu tên và số lượng vào danh sách
+                Debug.Log("Đang lưu món đồ: " + item.itemName);
                 dataList.Add(new InventoryData(item.itemName, item.quantity));
             }
         }
         return dataList;
     }
 
-    // --- HÀM 2: TẢI DỮ LIỆU VÀO TÚI (SaveManager sẽ gọi) ---
     public void LoadInventory(List<InventoryData> savedData)
     {
-        // 1. Xóa sạch túi đồ hiện tại (để tránh bị trùng đồ cũ)
+        // 1. Xóa sạch túi trước khi load
         foreach (Transform child in slotParent)
         {
-            Destroy(child.gameObject);
+            InventoryItem slot = child.GetComponent<InventoryItem>();
+            if (slot != null) slot.ClearSlot();
         }
 
-        // 2. Tạo lại từng món đồ từ dữ liệu đã lưu
+        // 2. Load lại từng món
         foreach (InventoryData data in savedData)
         {
-            // Load hình ảnh
-            Sprite itemIcon = Resources.Load<Sprite>("Icons/" + data.itemName);
-
-            if (itemIcon != null)
-            {
-                // Tạo Slot
-                GameObject newSlot = Instantiate(slotPrefab, slotParent);
-                newSlot.GetComponent<Image>().sprite = itemIcon;
-
-                // Cài đặt thông số (Tên, Số lượng)
-                InventoryItem itemScript = newSlot.GetComponent<InventoryItem>();
-                if (itemScript != null)
-                {
-                    itemScript.itemName = data.itemName;
-                    itemScript.quantity = data.quantity;
-                    itemScript.UpdateQuantityUI(); // Cập nhật số hiển thị (ví dụ "x5")
-
-                    // Cài đặt chức năng riêng (ví dụ Potion)
-                    if (data.itemName == "Potion")
-                    {
-                        itemScript.isPotion = true;
-                        itemScript.healAmount = 1;
-                    }
-                }
-            }
+            AddItem(data.itemName);
         }
     }
 }

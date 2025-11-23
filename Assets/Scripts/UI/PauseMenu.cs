@@ -53,7 +53,6 @@ public class PauseMenu : MonoBehaviour
             if (settingsPanelUI != null) settingsPanelUI.SetActive(false);
 
             Time.timeScale = 1f;
-            AudioListener.pause = false;
             GameIsPaused = false;
 
             
@@ -70,7 +69,6 @@ public class PauseMenu : MonoBehaviour
         {
             pauseMenuUI.SetActive(true);
             Time.timeScale = 0f;
-            AudioListener.pause = true;
             GameIsPaused = true;
 
         }

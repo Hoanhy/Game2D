@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class Sword : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class Sword : MonoBehaviour
 
     void Update()
     {
+
         // SỬA: Luôn xoay theo chuột nếu KHÔNG đang chém
         if (!swingBlock)
         {
@@ -56,6 +58,17 @@ public class Sword : MonoBehaviour
 
     public void Swing()
     {
+        // 1. Nếu chuột đang chạm vào UI -> Dừng lại
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+        // 2. Nếu túi đồ đang mở -> Dừng lại
+        if (InventoryUI.InventoryIsOpen)
+        {
+            return;
+        }
         if (Input.GetMouseButtonDown(0))
         {
             if (swingBlock)

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -35,6 +36,17 @@ public class PlayerAttack : MonoBehaviour
 
     void Update()
     {
+        // 1. Nếu chuột đang chạm vào UI -> Dừng lại
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+        // 2. Nếu túi đồ đang mở -> Dừng lại
+        if (InventoryUI.InventoryIsOpen)
+        {
+            return;
+        }
         attackTime -= Time.deltaTime;
 
         // SỬA: Dùng 'currentAttackCooldown' thay vì biến cố định
