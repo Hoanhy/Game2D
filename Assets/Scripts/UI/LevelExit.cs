@@ -1,30 +1,93 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections.Generic; // Cần có để dùng List
 
 public class LevelExit : MonoBehaviour
 {
     [Header("Cài đặt UI")]
-    public GameObject demoEndPanel; // Kéo cái Panel "DemoEndPanel" (đang tắt) vào đây
+    public GameObject endGamePanel;
+    public string menuSceneName = "MenuGame";
 
-    private bool isTriggered = false;
+    [Header("Điều kiện mở cổng")]
+    public List<string> requiredSpawnerIDs;
+
+    private bool isGameEnded = false;
+
+    private void Update()
+    {
+        if (isGameEnded)
+        {
+            if (Input.anyKeyDown)
+            {
+                LoadMenu();
+            }
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Kiểm tra nếu Player chạm vào cổng và chưa kích hoạt lần nào
-        if (other.CompareTag("Player") && !isTriggered)
+        if (other.CompareTag("Player") && !isGameEnded)
         {
-            isTriggered = true;
-
-            if (demoEndPanel != null)
+            // 1. KIỂM TRA ĐIỀU KIỆN
+            if (CheckAllSpawnersFinished())
             {
-                // Bật Panel lên. 
-                // Script "DemoEndController" (gắn trên Panel) sẽ tự động chạy:
-                // dừng thời gian, làm chữ nhấp nháy và lắng nghe phím bấm.
-                demoEndPanel.SetActive(true);
+                // Nếu đủ điều kiện -> Thắng
+                isGameEnded = true;
+                ShowEndGameUI();
             }
             else
             {
-                Debug.LogError("Quên kéo DemoEndPanel vào script LevelExit rồi bạn ơi!");
+                // Nếu chưa đủ -> Thông báo cho người chơi
+                Debug.Log("Cổng đang khóa! Cần diệt hết quái.");
+
             }
         }
+    }
+
+    // Hàm kiểm tra danh sách
+    bool CheckAllSpawnersFinished()
+    {
+        // Nếu không yêu cầu gì (List trống) -> Luôn đúng
+        if (requiredSpawnerIDs == null || requiredSpawnerIDs.Count == 0)
+            return true;
+
+        // Nếu SaveManager chưa sẵn sàng -> Coi như chưa xong
+        if (SaveManager.Instance == null)
+            return false;
+
+        foreach (string id in requiredSpawnerIDs)
+        {
+            // Hỏi SaveManager
+            bool isFinished = SaveManager.Instance.IsSpawnerFinished(id);
+
+            // --- THÊM DÒNG NÀY ĐỂ SOI LỖI ---
+            Debug.Log($"Kiểm tra ID: '{id}' - Trạng thái: {(isFinished ? "ĐÃ XONG" : "CHƯA XONG")}");
+            // --------------------------------
+
+            if (!isFinished)
+            {
+                return false; // Phát hiện 1 cái chưa xong -> Khóa cổng
+            }
+        }
+
+        // Nếu duyệt hết mà không bị return false -> Đã xong tất cả
+        return true;
+    }
+
+    void ShowEndGameUI()
+    {
+        if (endGamePanel != null)
+        {
+            endGamePanel.SetActive(true);
+            Time.timeScale = 0f;
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+    }
+
+    public void LoadMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(menuSceneName);
     }
 }

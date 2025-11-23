@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement; // Dùng để phát hiện khi tải màn
 public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance; // Singleton
+    public bool HasLoadedData = false; // Đánh dấu xem đã load file chưa
 
     // Các tham chiếu này sẽ được gán tự động
     private Player player;
@@ -16,6 +17,7 @@ public class SaveManager : MonoBehaviour
     private GameProgress currentGameData;
     private string saveFilePath;
     private string saveFileName = "progress.json"; // Tên file save
+
 
     void Awake()
     {
@@ -87,6 +89,7 @@ public class SaveManager : MonoBehaviour
     {
         // Tạo dữ liệu mới tinh
         currentGameData = new GameProgress();
+        HasLoadedData = false; // Đây là game mới
         if (player != null)
         {
             currentGameData.lastPlayerPosition = new SerializableVector2(player.transform.position);
@@ -154,10 +157,11 @@ public class SaveManager : MonoBehaviour
 
             // 3. CHUYỂN SANG ĐỐI TƯỢNG
             currentGameData = JsonUtility.FromJson<GameProgress>(json);
+            HasLoadedData = true; // Đánh dấu là đã load dữ liệu
 
             // 4. ÁP DỤNG
             // (Hàm này sẽ chờ OnSceneLoaded tìm Player rồi mới chạy)
-           
+
         }
         catch (Exception e)
         {
@@ -233,6 +237,27 @@ public class SaveManager : MonoBehaviour
         {
             currentGameData.finishedSpawnerIDs.Add(spawnerID);
 
+        }
+    }
+    // 1. Kiểm tra xem món đồ này đã bị nhặt chưa?
+    public bool IsItemCollected(string itemID)
+    {
+        if (currentGameData != null)
+        {
+            return currentGameData.collectedItemIDs.Contains(itemID);
+        }
+        return false;
+    }
+
+    // 2. Đánh dấu món đồ là đã nhặt
+    public void MarkItemCollected(string itemID)
+    {
+        if (currentGameData != null && !currentGameData.collectedItemIDs.Contains(itemID))
+        {
+            currentGameData.collectedItemIDs.Add(itemID);
+
+            // Quan trọng: Lưu game ngay (nhưng KHÔNG lưu vị trí, chỉ lưu trạng thái đồ)
+            SaveGame(false);
         }
     }
     public bool CheckForSaveFile()

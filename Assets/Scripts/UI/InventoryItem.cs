@@ -2,62 +2,100 @@
 using UnityEngine.UI;
 using TMPro;
 
+// Enum để phân loại (nếu cần dùng)
+public enum ItemType { None, Weapon, Consumable }
+
 public class InventoryItem : MonoBehaviour
 {
-    [Header("Thông tin vật phẩm")]
-    public string itemName; // Tên để phân biệt (ví dụ "Potion")
-    public int quantity = 1; // Số lượng hiện có
+    [Header("UI References (Kéo thả vào)")]
+    public Image iconImage;        // Ảnh con (ItemIcon)
+    public TextMeshProUGUI amountText; // Chữ số lượng
+    public Button button;          // Nút bấm (của chính Slot)
 
-    [Header("Cài đặt")]
-    public bool isPotion = false;
-    public int healAmount = 1;
+    [Header("Dữ liệu (Tự động điền)")]
+    public string itemName;
+    public int quantity;
+    public ItemType itemType;
+    public int healAmount;
 
-    [Header("UI")]
-    public TextMeshProUGUI amountText; // Kéo cái Text số lượng vào đây
-
-    // Hàm cập nhật số lượng lên màn hình
-    public void UpdateQuantityUI()
+    // --- HÀM 1: HIỂN THỊ ITEM ---
+    public void SetSlotData(string name, int qty)
     {
-        if (amountText != null)
+        this.itemName = name;
+        this.quantity = qty;
+
+        // 1. Load ảnh từ Resources
+        Sprite sprite = Resources.Load<Sprite>("Icons/" + name);
+
+        if (sprite != null)
         {
-            if (quantity > 1)
-                amountText.text = quantity.ToString(); // Hiện số nếu > 1
-            else
-                amountText.text = ""; // Ẩn số nếu chỉ có 1
+            iconImage.sprite = sprite;
+            iconImage.color = Color.white; // Hiện ảnh lên
+            iconImage.enabled = true;
         }
+        else
+        {
+            Debug.LogError("Không tìm thấy ảnh: Icons/" + name);
+        }
+
+        // 2. Cập nhật số lượng
+        if (amountText != null)
+            amountText.text = (quantity > 1) ? quantity.ToString() : "";
+
+        // 3. Phân loại tự động dựa theo tên (để bấm nút dùng được)
+        if (name == "Potion")
+        {
+            itemType = ItemType.Consumable;
+            healAmount = 1;
+        }
+        else
+        {
+            itemType = ItemType.Weapon;
+        }
+
+        // 4. Bật nút bấm
+        if (button != null) button.interactable = true;
     }
 
-    // Hàm này sẽ được gọi khi bấm vào nút trên UI
+    // --- HÀM 2: XÓA SLOT (Làm trống) ---
+    public void ClearSlot()
+    {
+        itemName = "";
+        quantity = 0;
+        itemType = ItemType.None;
+
+        iconImage.sprite = null;
+        iconImage.enabled = false; // Tắt ảnh đi
+        if (amountText != null) amountText.text = "";
+        if (button != null) button.interactable = false;
+    }
+
+    // --- HÀM DÙNG ITEM (Gắn vào nút OnClick) ---
     public void UseItem()
     {
-        if (isPotion)
+        if (itemType == ItemType.None) return;
+
+        PlayerAttack playerAttack = FindFirstObjectByType<PlayerAttack>();
+        PlayerHealth playerHealth = FindFirstObjectByType<PlayerHealth>();
+
+        // Dùng Vũ khí
+        if (itemType == ItemType.Weapon)
         {
-            PlayerHealth playerHealth = FindFirstObjectByType<PlayerHealth>();
-
-            if (playerHealth != null)
+            if (playerAttack != null)
             {
-                if (playerHealth.currentHP < playerHealth.maxHP)
-                {
-                    playerHealth.Heal(healAmount);
-                    Debug.Log("Đã uống thuốc!");
+                if (itemName == "Sword") playerAttack.EquipSword();
+                else if (itemName == "Axe") playerAttack.EquipAxe();
+            }
+        }
+        // Dùng Máu
+        else if (itemType == ItemType.Consumable)
+        {
+            if (playerHealth != null && playerHealth.currentHP < playerHealth.maxHP)
+            {
+                playerHealth.Heal(healAmount);
 
-                    // --- LOGIC MỚI: GIẢM SỐ LƯỢNG ---
-                    quantity--;
-
-                    if (quantity <= 0)
-                    {
-                        Destroy(gameObject); // Hết thì xóa
-                    }
-                    else
-                    {
-                        UpdateQuantityUI(); // Còn thì cập nhật số
-                    }
-                    // --------------------------------
-                }
-                else
-                {
-                    Debug.Log("Máu đang đầy!");
-                }
+                // Giảm số lượng trong Manager
+                InventoryManager.Instance.ReduceItem(itemName);
             }
         }
     }

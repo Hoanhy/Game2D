@@ -16,6 +16,7 @@ public class GameProgress
     public List<string> finishedSpawnerIDs = new List<string>();
     public List<string> deadEnemyIDs = new List<string>();
     public List<InventoryData> inventory = new List<InventoryData>();
+    public List<string> collectedItemIDs = new List<string>();
     // Đây là "Hàm khởi tạo" (Constructor)
     // Nó đặt các giá trị mặc định khi người chơi "New Game"
     public GameProgress()
