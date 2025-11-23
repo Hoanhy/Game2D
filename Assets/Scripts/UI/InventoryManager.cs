@@ -13,50 +13,84 @@ public class InventoryManager : MonoBehaviour
     {
         if (Instance == null) Instance = this;
     }
+    private void Start()
+    {
+        // --- TẠO ITEM MẶC ĐỊNH LÚC ĐẦU GAME ---
+        // Chỉ tạo nếu đây là New Game (kiểm tra SaveManager nếu cần)
+        // Nếu bạn đã có hệ thống Load Game, phần này có thể bỏ qua
+        // hoặc chỉ chạy khi inventory trống.
+        if (slotParent.childCount == 0)
+        {
+            AddItem("Sword");  // Mặc định Slot 1
+   
 
+        }   
+    }
     public void AddItem(string itemName)
     {
-        // --- BƯỚC 1: KIỂM TRA XEM ĐÃ CÓ CHƯA ---
-        // Duyệt qua tất cả các ô đang có trong túi
-        foreach (Transform child in slotParent)
+        // 1. Kiểm tra cộng dồn (Chỉ áp dụng cho Potion)
+        if (itemName == "Potion")
         {
-            InventoryItem itemScript = child.GetComponent<InventoryItem>();
-
-            // Nếu tìm thấy vật phẩm cùng tên
-            if (itemScript != null && itemScript.itemName == itemName)
+            foreach (Transform child in slotParent)
             {
-                itemScript.quantity++; // Tăng số lượng
-                itemScript.UpdateQuantityUI(); // Cập nhật text
-                Debug.Log("Đã cộng dồn " + itemName);
-                return; // Dừng hàm luôn, không tạo mới nữa
-            }
-        }
-
-        // --- BƯỚC 2: NẾU CHƯA CÓ THÌ TẠO MỚI ---
-        Sprite itemIcon = Resources.Load<Sprite>("Icons/" + itemName);
-
-        if (itemIcon != null)
-        {
-            GameObject newSlot = Instantiate(slotPrefab, slotParent);
-            newSlot.GetComponent<Image>().sprite = itemIcon;
-
-            InventoryItem newItemScript = newSlot.GetComponent<InventoryItem>();
-            if (newItemScript != null)
-            {
-                newItemScript.itemName = itemName; // Lưu tên để lần sau tìm thấy
-                newItemScript.quantity = 1;
-                newItemScript.UpdateQuantityUI(); // Cập nhật text lần đầu
-
-                if (itemName == "Potion")
+                InventoryItem itemScript = child.GetComponent<InventoryItem>();
+                if (itemScript != null && itemScript.itemName == itemName)
                 {
-                    newItemScript.isPotion = true;
-                    newItemScript.healAmount = 1;
+                    itemScript.quantity++;
+                    itemScript.UpdateQuantityUI();
+                    Debug.Log("Đã cộng dồn Potion thành: " + itemScript.quantity);
+                    return;
                 }
             }
         }
-        else
+
+        // 2. Load hình ảnh (Thêm debug để kiểm tra lỗi)
+        string path = "Icons/" + itemName;
+        Sprite itemIcon = Resources.Load<Sprite>(path);
+
+        if (itemIcon == null)
         {
-            Debug.LogWarning("Không tìm thấy icon: " + itemName);
+            Debug.LogError("LỖI TO: Không tìm thấy ảnh tại đường dẫn: Resources/" + path + ". Kiểm tra lại tên file hoặc thư mục!");
+            return;
+        }
+
+        // 3. Tạo Slot
+        if (slotPrefab == null || slotParent == null)
+        {
+            Debug.LogError("LỖI: Quên kéo SlotPrefab hoặc SlotParent vào InventoryManager rồi!");
+            return;
+        }
+
+        GameObject newSlot = Instantiate(slotPrefab, slotParent);
+        newSlot.GetComponent<Image>().sprite = itemIcon;
+
+        InventoryItem newItemScript = newSlot.GetComponent<InventoryItem>();
+        if (newItemScript != null)
+        {
+            newItemScript.itemName = itemName;
+            newItemScript.quantity = 1;
+            newItemScript.UpdateQuantityUI();
+
+            // --- LOGIC SẮP XẾP VỊ TRÍ ---
+            if (itemName == "Potion")
+            {
+                newItemScript.itemType = ItemType.Consumable;
+                newItemScript.healAmount = 2;
+                // Potion mặc định sinh ra ở cuối cùng -> Đúng ý bạn (Slot 3)
+            }
+            else if (itemName == "Sword")
+            {
+                newItemScript.itemType = ItemType.Weapon;
+                // Kiếm sinh ra đầu game -> Mặc định Slot 1
+            }
+            else if (itemName == "Axe")
+            {
+                newItemScript.itemType = ItemType.Weapon;
+
+                // Rìu chen lên đầu tiên -> Đẩy Kiếm xuống Slot 2, Máu xuống Slot 3
+                newSlot.transform.SetAsFirstSibling();
+                Debug.Log("Đã nhặt Rìu và đưa lên đầu túi!");
+            }
         }
     }
     // --- HÀM 1: LẤY DỮ LIỆU ĐỂ LƯU (SaveManager sẽ gọi) ---

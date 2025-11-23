@@ -82,7 +82,7 @@ TagManager:
   - name: CheckPoint
     uniqueID: 251020787
     locked: 0
-  - name: Sword
+  - name: Weapon
     uniqueID: 2373378005
     locked: 0
   - name: Player
@@ -93,6 +93,9 @@ TagManager:
     locked: 0
   - name: Enemy
     uniqueID: 2481952597
+    locked: 0
+  - name: Healing Potion
+    uniqueID: 18085033
     locked: 0
   - name: Roof
     uniqueID: 1773854267

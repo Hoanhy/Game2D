@@ -3,7 +3,6 @@ using System.Collections;
 
 public class Sword : MonoBehaviour
 {
-
     public Animator animator;
     public float swingCooldown = 0.3f;
     private bool swingBlock;
@@ -12,6 +11,7 @@ public class Sword : MonoBehaviour
     public float rotateOffset = 0f;
     private float lockedAngle;
     private Camera cam;
+
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -22,27 +22,34 @@ public class Sword : MonoBehaviour
         if (hitbox != null) hitbox.enabled = false;
     }
 
-
     void Update()
     {
-        Swing();
+        // SỬA: Luôn xoay theo chuột nếu KHÔNG đang chém
+        if (!swingBlock)
+        {
+            RotateTowardsMouse();
+        }
 
+        // Kiểm tra click chuột để chém
+        Swing();
     }
+
     void RotateTowardsMouse()
     {
         Vector3 mouseWorld = cam.ScreenToWorldPoint(Input.mousePosition);
         mouseWorld.z = 0;
         Vector3 dir = mouseWorld - transform.position;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
         transform.rotation = Quaternion.Euler(0, 0, angle + rotateOffset);
+
+        // Logic lật hình để không bị ngược khi xoay sang trái
         if (angle > 90 || angle < -90)
         {
-            // Lật sprite theo chiều dọc
             spriteRenderer.flipY = true;
         }
         else
         {
-            // Nếu ở bên phải, không lật
             spriteRenderer.flipY = false;
         }
     }
@@ -53,17 +60,21 @@ public class Sword : MonoBehaviour
         {
             if (swingBlock)
                 return;
+
             animator.SetTrigger("Swing");
             spriteRenderer.enabled = true;
             if (hitbox != null) hitbox.enabled = true;
 
             swingBlock = true;
             lockedAngle = transform.rotation.eulerAngles.z;
-            RotateTowardsMouse();
+
+            // XÓA: Không cần gọi RotateTowardsMouse() ở đây nữa 
+            // vì Update đã làm việc đó liên tục rồi.
+
             StartCoroutine(SwingCooldown());
         }
-
     }
+
     private IEnumerator SwingCooldown()
     {
         lockedAngle = transform.eulerAngles.z;
@@ -71,12 +82,13 @@ public class Sword : MonoBehaviour
         while (timer < swingCooldown)
         {
             timer += Time.deltaTime;
+            // Giữ chặt góc quay (khóa cứng) trong khi chém
             transform.rotation = Quaternion.Euler(0, 0, lockedAngle);
             yield return null;
         }
+
         spriteRenderer.enabled = false;
         if (hitbox != null) hitbox.enabled = false;
-        swingBlock = false;
-
+        swingBlock = false; // Mở khóa để Update tiếp tục xoay theo chuột
     }
 }

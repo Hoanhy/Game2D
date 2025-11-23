@@ -2,11 +2,13 @@
 using UnityEngine.UI;
 using TMPro;
 
+public enum ItemType { Consumable, Weapon }
 public class InventoryItem : MonoBehaviour
 {
     [Header("Thông tin vật phẩm")]
     public string itemName; // Tên để phân biệt (ví dụ "Potion")
     public int quantity = 1; // Số lượng hiện có
+    public ItemType itemType;
 
     [Header("Cài đặt")]
     public bool isPotion = false;
@@ -32,31 +34,40 @@ public class InventoryItem : MonoBehaviour
     {
         if (isPotion)
         {
+            PlayerAttack playerAttack = FindFirstObjectByType<PlayerAttack>();
             PlayerHealth playerHealth = FindFirstObjectByType<PlayerHealth>();
 
-            if (playerHealth != null)
+            if (itemType == ItemType.Weapon)
             {
-                if (playerHealth.currentHP < playerHealth.maxHP)
+                if (playerAttack != null)
                 {
-                    playerHealth.Heal(healAmount);
-                    Debug.Log("Đã uống thuốc!");
-
-                    // --- LOGIC MỚI: GIẢM SỐ LƯỢNG ---
-                    quantity--;
-
-                    if (quantity <= 0)
+                    if (itemName == "Sword")
                     {
-                        Destroy(gameObject); // Hết thì xóa
+                        playerAttack.EquipSword();
+                        Debug.Log("Đã trang bị Kiếm!");
                     }
-                    else
+                    else if (itemName == "Axe")
                     {
-                        UpdateQuantityUI(); // Còn thì cập nhật số
+                        playerAttack.EquipAxe();
+                        Debug.Log("Đã trang bị Rìu!");
                     }
-                    // --------------------------------
+                    // Vũ khí dùng xong KHÔNG biến mất, nên không có Destroy
                 }
-                else
+            }
+
+            // --- TRƯỜNG HỢP 2: LÀ BÌNH MÁU ---
+            else if (itemType == ItemType.Consumable) // Potion
+            {
+                if (playerHealth != null)
                 {
-                    Debug.Log("Máu đang đầy!");
+                    if (playerHealth.currentHP < playerHealth.maxHP)
+                    {
+                        playerHealth.Heal(healAmount);
+
+                        quantity--;
+                        if (quantity <= 0) Destroy(gameObject);
+                        else UpdateQuantityUI();
+                    }
                 }
             }
         }
